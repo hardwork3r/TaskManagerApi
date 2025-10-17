@@ -9,12 +9,18 @@ using TaskManagerApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ----------------- Конфигурация через Environment Variables -----------------
+builder.Configuration.AddEnvironmentVariables();
+
 // ----------------- MongoDB -----------------
 var conventionPack = new ConventionPack { new IgnoreExtraElementsConvention(true) };
 ConventionRegistry.Register("IgnoreExtraElements", conventionPack, type => true);
 
-var mongoUrl = builder.Configuration["MongoDB:ConnectionString"];
-var databaseName = builder.Configuration["MongoDB:DatabaseName"];
+var mongoUrl = builder.Configuration["MongoDB:ConnectionString"]
+               ?? throw new ArgumentNullException("MongoDB:ConnectionString не задана!");
+var databaseName = builder.Configuration["MongoDB:DatabaseName"]
+                   ?? throw new ArgumentNullException("MongoDB:DatabaseName не задана!");
+
 var mongoClient = new MongoClient(mongoUrl);
 var database = mongoClient.GetDatabase(databaseName);
 
@@ -25,7 +31,8 @@ builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<FileService>();
 
 // ----------------- JWT -----------------
-var jwtSecret = builder.Configuration["JWT:SecretKey"] ?? "your-secret-key-change-in-production";
+var jwtSecret = builder.Configuration["JWT:SecretKey"] 
+                ?? "your-secret-key-change-in-production";
 var jwtKey = Encoding.UTF8.GetBytes(jwtSecret);
 
 builder.Services.AddAuthentication(x =>
@@ -59,16 +66,11 @@ builder.Services.AddCors(options =>
     {
         if (corsOrigins.Length == 1 && corsOrigins[0] == "*")
         {
-            policy.AllowAnyOrigin()
-                  .AllowAnyMethod()
-                  .AllowAnyHeader();
+            policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
         }
         else
         {
-            policy.WithOrigins(corsOrigins)
-                  .AllowAnyMethod()
-                  .AllowAnyHeader()
-                  .AllowCredentials();
+            policy.WithOrigins(corsOrigins).AllowAnyMethod().AllowAnyHeader().AllowCredentials();
         }
     });
 });
@@ -85,7 +87,7 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Task Manager API v1");
-    c.RoutePrefix = string.Empty; // Swagger �������� �� /
+    c.RoutePrefix = string.Empty; // Swagger доступен по /
 });
 
 // ----------------- Middleware -----------------
@@ -93,10 +95,11 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// ----------------- Health Check -----------------
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 app.MapControllers();
 
-// ----------------- ������������ ���� ��� Render -----------------
+// ----------------- Динамический порт для Render -----------------
 var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
 app.Urls.Add($"http://0.0.0.0:{port}");
 
