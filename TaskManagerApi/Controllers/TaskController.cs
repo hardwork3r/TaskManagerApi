@@ -211,10 +211,14 @@ public class TaskController : ControllerBase
 
         if (!isAdmin)
         {
-            if (taskUpdate.Status == null)
-                return BadRequest(new { detail = "Status field is required for update" });
-
-            await _taskService.UpdateTaskStatusAsync(taskId, taskUpdate.Status);
+            if (isOwner)
+            {
+                await _taskService.UpdateTaskAsync(taskId, taskUpdate);
+            }
+            else
+            {
+                await _taskService.UpdateTaskStatusAsync(taskId, taskUpdate.Status);
+            }
         }
         else
         {
