@@ -6,6 +6,13 @@ TaskTracker - Система управления задачами
 
 TaskTracker - это современная веб-платформа для управления задачами с поддержкой ролей, Kanban-доски, файловых вложений и гибкой системой назначения пользователей. Проект построен на микросервисной архитектуре с раздельным frontend и backend.
 
+📷 Скриншоты
+
+<img width="871" height="852" alt="TaskModal" src="https://github.com/user-attachments/assets/c25f8246-bbd0-44e9-813e-8b1bf0f5e70f" />
+<img width="1713" height="903" alt="KanbanBoard" src="https://github.com/user-attachments/assets/3de53a35-6f1d-4b45-ba0f-5229d7ea9323" />
+<img width="796" height="728" alt="Login" src="https://github.com/user-attachments/assets/05c87ca6-3aa6-4760-b128-79e389bb96c1" />
+<img width="1557" height="539" alt="AdminPanel" src="https://github.com/user-attachments/assets/5ca30db9-0788-45ba-92ee-565cd92fb799" />
+
 ✨ Основные возможности
 
 🎯 Управление задачами
